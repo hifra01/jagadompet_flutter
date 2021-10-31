@@ -44,7 +44,9 @@ class LoginPage extends StatelessWidget {
                 style: TextStyle(fontSize: 12),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/register');
+                },
                 child: const Text(
                   'Buat akun baru',
                   style: TextStyle(

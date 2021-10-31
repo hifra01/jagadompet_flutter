@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "406408997957",
+    "project_id": "jagadompet-493bc",
+    "storage_bucket": "jagadompet-493bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406408997957:android:d6f4de22816a8b8424072c",
+        "android_client_info": {
+          "package_name": "id.my.hifra.jagadompet_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406408997957-ebsda4cb71iuvlkjig8dhflv9gdvetki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4dy_YTHsrfASFFP9Pn6Ce3Ve3EjERTtY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406408997957-ebsda4cb71iuvlkjig8dhflv9gdvetki.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -44,7 +44,9 @@ class RegisterPage extends StatelessWidget {
                 style: TextStyle(fontSize: 12),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
                 child: const Text(
                   'Login',
                   style: TextStyle(
