@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jagadompet_flutter/pages/home_page_sections/history_section.dart';
 import 'package:jagadompet_flutter/pages/home_page_sections/home_section.dart';
@@ -13,19 +14,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late User? currentUser;
   int _selectedIndex = 0;
-
-  final List<Widget> _sectionsList = <Widget>[
-    HomeSection(),
-    HistorySection(),
-    HomeSection(),
-    ProfileSection(),
-  ];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    currentUser = _auth.currentUser;
   }
 
   @override
@@ -44,6 +41,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser == null) {
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
+
+    final List<Widget> _sectionsList = <Widget>[
+      HomeSection(
+        currentUser: currentUser,
+      ),
+      HistorySection(),
+      HomeSection(
+        currentUser: currentUser,
+      ),
+      ProfileSection(
+        currentUser: currentUser,
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -59,6 +73,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -71,6 +86,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.pie_chart),
             label: 'Grafik',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,

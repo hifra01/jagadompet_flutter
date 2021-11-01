@@ -16,7 +16,7 @@ class TransactionHistoryCard extends StatelessWidget {
         side: BorderSide(
           color: Colors.grey.shade200,
         ),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
