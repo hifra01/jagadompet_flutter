@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:jagadompet_flutter/pages/add_income_page.dart';
+import 'package:jagadompet_flutter/pages/add_outcome_page.dart';
 import 'package:jagadompet_flutter/pages/home_page.dart';
 import 'package:jagadompet_flutter/pages/login_page.dart';
 import 'package:jagadompet_flutter/pages/register_page.dart';
@@ -29,6 +32,8 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
         '/home': (context) => HomePage(),
+        '/addoutcome': (context) => AddOutcomePage(),
+        '/addincome': (context) => AddIncomePage(),
       },
       initialRoute: '/login',
     );

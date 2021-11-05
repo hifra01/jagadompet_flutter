@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/monthly_cashflow.dart';
 import 'package:jagadompet_flutter/widgets/difference_pie_chart.dart';
 
@@ -12,6 +13,7 @@ class InOutDiffCard extends StatefulWidget {
 }
 
 class _InOutDiffCardState extends State<InOutDiffCard> {
+  final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -99,7 +101,7 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
                                 height: 4,
                               ),
                               Text(
-                                'Rp${cashflow.income}',
+                                'Rp${numberFormat.format(cashflow.income)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
@@ -121,7 +123,7 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
                                 height: 4,
                               ),
                               Text(
-                                'Rp${cashflow.outcome}',
+                                'Rp${numberFormat.format(cashflow.outcome)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red,
@@ -143,7 +145,7 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
                                 height: 4,
                               ),
                               Text(
-                                'Rp${(cashflow.income! - cashflow.outcome!)}',
+                                'Rp${numberFormat.format(cashflow.income! - cashflow.outcome!)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

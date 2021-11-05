@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jagadompet_flutter/pages/home_page_sections/graph_section.dart';
 import 'package:jagadompet_flutter/pages/home_page_sections/history_section.dart';
 import 'package:jagadompet_flutter/pages/home_page_sections/home_section.dart';
 import 'package:jagadompet_flutter/pages/home_page_sections/profile_section.dart';
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         currentUser: currentUser,
       ),
       HistorySection(),
-      HomeSection(
+      GraphSection(
         currentUser: currentUser,
       ),
       ProfileSection(

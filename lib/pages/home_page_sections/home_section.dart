@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/wallet.dart';
 import 'package:jagadompet_flutter/widgets/in_out_diff_card.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 class HomeSection extends StatefulWidget {
   final User? currentUser;
@@ -14,6 +16,7 @@ class HomeSection extends StatefulWidget {
 
 class _HomeSectionState extends State<HomeSection> {
   late DocumentReference userWallet;
+  final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
 
   @override
   void initState() {
@@ -70,8 +73,9 @@ class _HomeSectionState extends State<HomeSection> {
                             color: Colors.white,
                           ),
                         ),
+                        const SizedBox(width: 4,),
                         Text(
-                          '${data.total}',
+                          numberFormat.format(data.total),
                           style: const TextStyle(
                             fontSize: 24,
                             color: Colors.white,
@@ -94,7 +98,10 @@ class _HomeSectionState extends State<HomeSection> {
                       height: 32,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/addincome');
+                        setState(() {});
+                      },
                       child: Row(
                         children: const [
                           Icon(Icons.account_balance_wallet),
@@ -113,7 +120,10 @@ class _HomeSectionState extends State<HomeSection> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/addoutcome');
+                        setState(() {});
+                      },
                       child: Row(
                         children: const [
                           Icon(Icons.shopping_cart),
@@ -135,10 +145,58 @@ class _HomeSectionState extends State<HomeSection> {
           );
         }
 
-        return const SizedBox.expand(
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
+        return Column(
+          children: [
+            Container(
+              color: Colors.blue,
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      'Isi dompetmu saat ini',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Rp',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 4,),
+                      SkeletonAnimation(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Container(
+                          height: 24,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.blue[200],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ],
         );
       },
     );

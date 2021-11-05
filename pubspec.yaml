@@ -34,6 +34,8 @@ dependencies:
   cloud_firestore: ^2.5.4
   fl_chart: ^0.40.2
   email_validator: ^2.0.1
+  skeleton_text: ^3.0.0
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
