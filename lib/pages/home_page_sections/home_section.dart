@@ -73,7 +73,9 @@ class _HomeSectionState extends State<HomeSection> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 4,),
+                        const SizedBox(
+                          width: 4,
+                        ),
                         Text(
                           numberFormat.format(data.total),
                           style: const TextStyle(
@@ -174,7 +176,9 @@ class _HomeSectionState extends State<HomeSection> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 4,),
+                      const SizedBox(
+                        width: 4,
+                      ),
                       SkeletonAnimation(
                         borderRadius: BorderRadius.circular(5),
                         child: Container(

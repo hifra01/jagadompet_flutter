@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:jagadompet_flutter/pages/add_income_page.dart';
 import 'package:jagadompet_flutter/pages/add_outcome_page.dart';
+import 'package:jagadompet_flutter/pages/detail_income_page.dart';
+import 'package:jagadompet_flutter/pages/detail_outcome_page.dart';
 import 'package:jagadompet_flutter/pages/home_page.dart';
 import 'package:jagadompet_flutter/pages/login_page.dart';
 import 'package:jagadompet_flutter/pages/register_page.dart';
@@ -21,8 +23,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
+    String initialPath = _auth.currentUser != null ? '/home' : '/login';
     return MaterialApp(
       title: 'JagaDompet',
       theme: ThemeData(
@@ -34,8 +38,10 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => HomePage(),
         '/addoutcome': (context) => AddOutcomePage(),
         '/addincome': (context) => AddIncomePage(),
+        '/detailoutcome': (context) => DetailOutcomePage(),
+        '/detailincome': (context) => DetailIncomePage(),
       },
-      initialRoute: '/login',
+      initialRoute: initialPath,
     );
   }
 }

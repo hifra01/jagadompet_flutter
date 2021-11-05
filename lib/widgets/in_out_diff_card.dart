@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/monthly_cashflow.dart';
 import 'package:jagadompet_flutter/widgets/difference_pie_chart.dart';
@@ -16,6 +17,7 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
   final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('id_ID', null);
     DateTime now = DateTime.now();
     String year = now.year.toString();
     String month = now.month.toString();
@@ -64,9 +66,9 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Statistik bulan ini',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+                  Text(
+                    'Statistik bulan ini (${DateFormat.yMMMM('id_ID').format(now)})',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
                   const SizedBox(
                     height: 16,

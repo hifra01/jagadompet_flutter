@@ -20,13 +20,13 @@ class TransactionItem {
   });
 
   TransactionItem.fromJson(Map<String, Object?> json)
-  : this(
-    type: json['type'] != null ? json['type'] as String : 'out',
-    title: json['title'] != null ? json['title'] as String : '',
-    amount: json['amount'] != null ? json['amount'] as int : 0,
-    date: (json['date'] as Timestamp).toDate(),
-    category: json['category'] as String?,
-    source: json['source'] as String?,
-    note: json['note'] != null ? json['note'] as String : '',
-  );
+      : this(
+          type: json['type'] != null ? json['type'] as String : 'out',
+          title: json['title'] != null ? json['title'] as String : '',
+          amount: json['amount'] != null ? json['amount'] as int : 0,
+          date: (json['date'] as Timestamp).toDate(),
+          category: json['category'] as String?,
+          source: json['source'] as String?,
+          note: json['note'] != null ? json['note'] as String : '',
+        );
 }

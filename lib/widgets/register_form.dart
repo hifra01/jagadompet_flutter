@@ -17,6 +17,9 @@ class _RegisterFormState extends State<RegisterForm> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _hidePassword = true;
+  bool _hideConfirmPassword = true;
+  bool _isRegisterDisabled = false;
 
   @override
   void initState() {
@@ -36,20 +39,54 @@ class _RegisterFormState extends State<RegisterForm> {
     super.dispose();
   }
 
+  void _doRegister() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isRegisterDisabled = true;
+      });
+      String fullName = _fullNameController.text;
+      String email = _emailController.text;
+      String password = _passwordController.text;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sedang membuat akun...'),
+        ),
+      );
+      try {
+        await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await userFirstTimeSetup(fullName, email);
+        Navigator.pushReplacementNamed(context, '/home');
+      } on FirebaseException catch (e) {
+        _isRegisterDisabled = false;
+        String errorMessage = e.message ?? 'Terjadi kesalahan';
+        final snackBar = SnackBar(
+          content: Text(errorMessage),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double inputWidth = MediaQuery.of(context).size.width * 0.7;
-    const double inputHeight = 50;
+    Widget _showPassword = _hidePassword
+        ? const Icon(Icons.visibility)
+        : const Icon(Icons.visibility_off);
+    Widget _showConfirmPassword = _hideConfirmPassword
+        ? const Icon(Icons.visibility)
+        : const Icon(Icons.visibility_off);
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Column(
+          children: [
+            TextFormField(
               decoration: const InputDecoration(
                 label: Text('Nama lengkap'),
-                border: OutlineInputBorder(),
               ),
               controller: _fullNameController,
               validator: (value) {
@@ -58,16 +95,12 @@ class _RegisterFormState extends State<RegisterForm> {
                 }
               },
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
+            const SizedBox(
+              height: 16,
+            ),
+            TextFormField(
               decoration: const InputDecoration(
                 label: Text('E-mail'),
-                border: OutlineInputBorder(),
               ),
               controller: _emailController,
               validator: (value) {
@@ -77,40 +110,50 @@ class _RegisterFormState extends State<RegisterForm> {
                   return 'Format e-mail tidak valid';
                 }
               },
+              keyboardType: TextInputType.emailAddress,
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                label: Text('Password'),
-                border: OutlineInputBorder(),
+            const SizedBox(
+              height: 16,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                label: const Text('Password'),
+                suffix: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _hidePassword = !_hidePassword;
+                    });
+                  },
+                  icon: _showPassword,
+                ),
               ),
-              obscureText: true,
+              obscureText: _hidePassword,
               controller: _passwordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Password tidak boleh kosong';
                 } else if (value.length < 6) {
-                  return 'Password harus memiliki panjang minimal 6 karakter';
+                  return 'Panjang password minimal 6 karakter';
                 }
               },
+              keyboardType: TextInputType.visiblePassword,
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                label: Text('Konfirmasi Password'),
-                border: OutlineInputBorder(),
+            const SizedBox(
+              height: 16,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                label: const Text('Konfirmasi Password'),
+                suffix: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _hideConfirmPassword = !_hideConfirmPassword;
+                    });
+                  },
+                  icon: _showConfirmPassword,
+                ),
               ),
-              obscureText: true,
+              obscureText: _hideConfirmPassword,
               controller: _confirmPasswordController,
               validator: (value) {
                 if (value == null ||
@@ -119,44 +162,25 @@ class _RegisterFormState extends State<RegisterForm> {
                   return 'Konfirmasi password tidak sesuai';
                 }
               },
+              keyboardType: TextInputType.visiblePassword,
             ),
-          ),
-          const SizedBox(
-            height: 32,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                String fullName = _fullNameController.text;
-                String email = _emailController.text;
-                String password = _passwordController.text;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Sedang membuat akun...'),
-                  ),
-                );
-                try {
-                  await _auth.createUserWithEmailAndPassword(
-                    email: email,
-                    password: password,
-                  );
-                  await userFirstTimeSetup(fullName, email);
-                  Navigator.pushReplacementNamed(context, '/home');
-                } on FirebaseAuthException catch (e) {
-                  String errorMessage = e.message ?? 'Terjadi kesalahan';
-                  final snackBar = SnackBar(
-                    content: Text(errorMessage),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-              }
-            },
-            child: const Text('REGISTER'),
-            style: ElevatedButton.styleFrom(
-              fixedSize: Size(inputWidth, inputHeight),
+            const SizedBox(
+              height: 32,
             ),
-          )
-        ],
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isRegisterDisabled ? null : _doRegister,
+                child: _isRegisterDisabled
+                    ? const CircularProgressIndicator()
+                    : const Text('REGISTER'),
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(double.infinity, 48),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

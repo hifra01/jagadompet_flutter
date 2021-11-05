@@ -50,7 +50,9 @@ class _HomePageState extends State<HomePage> {
       HomeSection(
         currentUser: currentUser,
       ),
-      HistorySection(),
+      HistorySection(
+        currentUser: currentUser,
+      ),
       GraphSection(
         currentUser: currentUser,
       ),

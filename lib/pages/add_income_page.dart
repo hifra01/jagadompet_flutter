@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jagadompet_flutter/utils/firebase_utils.dart';
@@ -15,6 +16,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
   late TextEditingController _titleController;
   late TextEditingController _amountController;
   late TextEditingController _noteController;
+  bool _isAddIncomeDisabled = false;
 
   List<DropdownMenuItem> sourceList() {
     return <DropdownMenuItem>[
@@ -44,6 +46,41 @@ class _AddIncomePageState extends State<AddIncomePage> {
         child: Text('Lain-lain'),
       ),
     ];
+  }
+
+  void _doAddIncome() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isAddIncomeDisabled = true;
+      });
+      String source = _selectedSource;
+      String title = _titleController.value.text;
+      int amount = int.parse(_amountController.value.text);
+      String note = _noteController.value.text;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Menambah isi dompet...'),
+        ),
+      );
+      try {
+        await addInTransaction(
+          source: source,
+          title: title,
+          amount: amount,
+          note: note,
+        );
+
+        Navigator.pop(context);
+      } on FirebaseException catch (e) {
+        _isAddIncomeDisabled = false;
+        String errorMessage = e.message ?? 'Terjadi kesalahan';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -93,7 +130,6 @@ class _AddIncomePageState extends State<AddIncomePage> {
                   });
                 },
                 validator: (dynamic value) {
-                  String strValue = value as String;
                   if (value.isEmpty) {
                     return 'Sumber tidak boleh kosong';
                   }
@@ -121,8 +157,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
               ),
               TextFormField(
                 decoration: const InputDecoration(
-                    label: Text('Nominal*'),
-                    prefixText: 'Rp '),
+                    label: Text('Nominal*'), prefixText: 'Rp '),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Nominal transaksi tidak boleh kosong';
@@ -153,24 +188,10 @@ class _AddIncomePageState extends State<AddIncomePage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      String source = _selectedSource;
-                      String title = _titleController.value.text;
-                      int amount = int.parse(_amountController.value.text);
-                      String note = _noteController.value.text;
-
-                      await addInTransaction(
-                        source: source,
-                        title: title,
-                        amount: amount,
-                        note: note,
-                      );
-
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text('Tambah pengeluaran'),
+                  onPressed: _isAddIncomeDisabled ? null : _doAddIncome,
+                  child: _isAddIncomeDisabled
+                      ? const CircularProgressIndicator()
+                      : const Text('Tambah pengeluaran'),
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(double.infinity, 48),
                   ),

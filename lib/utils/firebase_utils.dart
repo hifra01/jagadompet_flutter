@@ -7,6 +7,9 @@ Future<void> userFirstTimeSetup(String fullName, String email) async {
   User? currentUser = auth.currentUser;
   String uid = auth.currentUser!.uid.toString();
 
+  DocumentReference profileRef =
+      FirebaseFirestore.instance.collection('profile').doc(uid);
+
   CollectionReference wallet = FirebaseFirestore.instance.collection('wallet');
   DocumentReference userWallet = wallet.doc(uid);
 
@@ -17,25 +20,12 @@ Future<void> userFirstTimeSetup(String fullName, String email) async {
   String month = now.month.toString();
   String cashflowKey = '${year}_$month';
 
-  Map walletObject = {
-    'amount': 0,
-  };
-
-  Map cashflowObject = {
-    'in': 0,
-    'out': 0,
-    'out_food': 0,
-    'out_daily': 0,
-    'out_education': 0,
-    'out_health': 0,
-    'out_other': 0,
-  };
-
-  currentUser!.updateDisplayName(fullName);
-  userWallet.set({
+  await currentUser!.updateDisplayName(fullName);
+  await profileRef.set({'name': fullName});
+  await userWallet.set({
     'amount': 0,
   }, SetOptions(merge: true));
-  userCashflows.doc(cashflowKey).set({
+  await userCashflows.doc(cashflowKey).set({
     'in': 0,
     'out': 0,
     'out_food': 0,
@@ -117,13 +107,13 @@ Future<void> addInTransaction({
   String uid = auth.currentUser!.uid.toString();
 
   DocumentReference userWalletRef =
-  FirebaseFirestore.instance.collection('wallet').doc(uid);
+      FirebaseFirestore.instance.collection('wallet').doc(uid);
 
   DocumentReference thisMonthCashflowRef =
-  userWalletRef.collection('cashflow').doc(yearMonthKey);
+      userWalletRef.collection('cashflow').doc(yearMonthKey);
 
   CollectionReference transactionsCollectionRef =
-  userWalletRef.collection('transactions');
+      userWalletRef.collection('transactions');
 
   Map<String, dynamic> userWallet = await userWalletRef
       .get()

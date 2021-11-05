@@ -59,7 +59,8 @@ class _GraphSectionState extends State<GraphSection> {
                 }
 
                 if (snapshot.connectionState == ConnectionState.done) {
-                  MonthlyCashflow cashflow = MonthlyCashflow.fromJson(snapshot.data!.data() as Map<String, Object?>);
+                  MonthlyCashflow cashflow = MonthlyCashflow.fromJson(
+                      snapshot.data!.data() as Map<String, Object?>);
                   return OutcomeGraph(cashflow: cashflow);
                 }
 

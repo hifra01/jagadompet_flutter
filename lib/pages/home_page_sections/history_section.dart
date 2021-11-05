@@ -6,20 +6,19 @@ import 'package:jagadompet_flutter/widgets/transaction_history_card.dart';
 
 class HistorySection extends StatefulWidget {
   final User? currentUser;
-  const HistorySection({Key? key, this.currentUser}) : super(key: key);
+  const HistorySection({Key? key, required this.currentUser}) : super(key: key);
   @override
   _HistorySectionState createState() => _HistorySectionState();
 }
 
 class _HistorySectionState extends State<HistorySection> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   late String _uid;
   late CollectionReference _transactionsRef;
 
   @override
   void initState() {
     super.initState();
-    _uid = _auth.currentUser!.uid.toString();
+    _uid = widget.currentUser!.uid;
     _transactionsRef = FirebaseFirestore.instance
         .collection('wallet')
         .doc(_uid)
@@ -54,11 +53,18 @@ class _HistorySectionState extends State<HistorySection> {
                 );
               }
               if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data!.size == 0) {
+                  return const Center(
+                    child: Text('Anda belum menambahkan transaksi apapun'),
+                  );
+                }
                 List transactions = snapshot.data!.docs;
                 return ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, i) {
-                    return TransactionHistoryCard(transaction: TransactionItem.fromJson(transactions[i].data() as Map<String, Object?>));
+                    return TransactionHistoryCard(
+                        transaction: TransactionItem.fromJson(
+                            transactions[i].data() as Map<String, Object?>));
                   },
                 );
               }

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoginForm extends StatefulWidget {
@@ -13,6 +14,8 @@ class _LoginFormState extends State<LoginForm> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _hidePassword = true;
+  bool _isLoginDisabled = false;
 
   @override
   void initState() {
@@ -28,20 +31,51 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
+  void _doLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoginDisabled = true;
+      });
+      String email = _emailController.text;
+      String password = _passwordController.text;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mencoba login...'),
+        ),
+      );
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      } on FirebaseException catch (e) {
+        setState(() {
+          _isLoginDisabled = true;
+        });
+        String errorMessage = e.message ?? 'Terjadi kesalahan';
+        final snackBar = SnackBar(
+          content: Text(errorMessage),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double inputWidth = MediaQuery.of(context).size.width * 0.7;
-    const double inputHeight = 50;
+    Widget _showPassword = _hidePassword
+        ? const Icon(Icons.visibility)
+        : const Icon(Icons.visibility_off);
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Column(
+          children: [
+            TextFormField(
               decoration: const InputDecoration(
                 label: Text('E-mail'),
-                border: OutlineInputBorder(),
               ),
               controller: _emailController,
               validator: (value) {
@@ -49,60 +83,49 @@ class _LoginFormState extends State<LoginForm> {
                   return 'E-mail tidak boleh kosong';
                 }
               },
+              keyboardType: TextInputType.emailAddress,
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints.tight(Size(inputWidth, inputHeight)),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                label: Text('Password'),
-                border: OutlineInputBorder(),
+            const SizedBox(
+              height: 16,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                label: const Text('Password'),
+                suffix: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _hidePassword = !_hidePassword;
+                    });
+                  },
+                  icon: _showPassword,
+                ),
               ),
-              obscureText: true,
+              obscureText: _hidePassword,
               controller: _passwordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Password tidak boleh kosong';
                 }
               },
+              keyboardType: TextInputType.visiblePassword,
             ),
-          ),
-          const SizedBox(
-            height: 32,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                String email = _emailController.text;
-                String password = _passwordController.text;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Mencoba login...'),
-                  ),
-                );
-                try {
-                  await _auth.signInWithEmailAndPassword(
-                    email: email,
-                    password: password,
-                  );
-                  Navigator.pushReplacementNamed(context, '/home');
-                } on FirebaseAuthException catch (e) {
-                  String errorMessage = e.message ?? 'Terjadi kesalahan';
-                  final snackBar = SnackBar(
-                    content: Text(errorMessage),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-              }
-            },
-            child: const Text('LOGIN'),
-            style: ElevatedButton.styleFrom(
-                fixedSize: Size(inputWidth, inputHeight)),
-          )
-        ],
+            const SizedBox(
+              height: 32,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoginDisabled ? null : _doLogin,
+                child: _isLoginDisabled
+                    ? const CircularProgressIndicator()
+                    : const Text('LOGIN'),
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(double.infinity, 48),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/monthly_cashflow.dart';
 import 'package:jagadompet_flutter/widgets/indicator.dart';
@@ -69,6 +70,8 @@ class OutcomeGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('id_ID', null);
+    DateTime now = DateTime.now();
     final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
     final int total = cashflow.outFood! +
         cashflow.outDaily! +
@@ -78,6 +81,16 @@ class OutcomeGraph extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          Text(
+            DateFormat.yMMMM('id_ID').format(now),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(

@@ -12,8 +12,9 @@ class TransactionHistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     initializeDateFormatting('id_ID', null);
     NumberFormat numberFormat = NumberFormat.decimalPattern('id');
-    Color priceColor =
-    transaction.type == "in" ? Colors.green : Colors.red;
+    Color priceColor = transaction.type == "in" ? Colors.green : Colors.red;
+    String detailPath =
+        transaction.type == "in" ? '/detailincome' : '/detailoutcome';
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -23,7 +24,9 @@ class TransactionHistoryCard extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () async {
+          Navigator.pushNamed(context, detailPath, arguments: transaction);
+        },
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -49,7 +52,9 @@ class TransactionHistoryCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4,),
+              const SizedBox(
+                height: 4,
+              ),
               Text(
                 DateFormat.yMMMMd('id_ID').format(transaction.date),
                 style: const TextStyle(fontSize: 12),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jagadompet_flutter/widgets/profile_name.dart';
 
 class ProfileSection extends StatefulWidget {
   final User? currentUser;
@@ -28,21 +29,21 @@ class _ProfileSectionState extends State<ProfileSection> {
           ),
         ),
         Expanded(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: ListView(
+            child: Column(
               children: [
                 const SizedBox(
                   height: 16,
                 ),
-                Text(
-                  widget.currentUser!.displayName.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
+                const Image(
+                  image: AssetImage('assets/images/user.png'),
+                  width: 120,
                 ),
+                const SizedBox(
+                  height: 32,
+                ),
+                ProfileName(currentUser: widget.currentUser),
                 const SizedBox(
                   height: 8,
                 ),

@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 class DifferencePieChart extends StatefulWidget {
   final int income;
   final int outcome;
-  const DifferencePieChart({Key? key, required this.income, required this.outcome}) : super(key: key);
+  const DifferencePieChart(
+      {Key? key, required this.income, required this.outcome})
+      : super(key: key);
 
   @override
   _DifferencePieChartState createState() => _DifferencePieChartState();
 }
 
 class _DifferencePieChartState extends State<DifferencePieChart> {
-
   List<PieChartSectionData> categoryList() {
     double newIncome = widget.income.toDouble();
     double newOutcome = widget.outcome.toDouble();

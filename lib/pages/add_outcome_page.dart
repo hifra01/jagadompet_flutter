@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
   late TextEditingController _titleController;
   late TextEditingController _amountController;
   late TextEditingController _noteController;
+  bool _isAddOutcomeDisabled = false;
 
   List<DropdownMenuItem> categoryList() {
     return <DropdownMenuItem>[
@@ -45,6 +47,39 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
         child: Text('Lain-lain'),
       ),
     ];
+  }
+
+  void _doAddOutcome() async {
+    if (_formKey.currentState!.validate()) {
+      _isAddOutcomeDisabled = true;
+      String category = _selectedCategory;
+      String title = _titleController.value.text;
+      int amount = int.parse(_amountController.value.text);
+      String note = _noteController.value.text;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Menambah pengeluaran baru...'),
+        ),
+      );
+      try {
+        await addOutTransaction(
+          category: category,
+          title: title,
+          amount: amount,
+          note: note,
+        );
+
+        Navigator.pop(context);
+      } on FirebaseException catch (e) {
+        _isAddOutcomeDisabled = false;
+        String errorMessage = e.message ?? 'Terjadi kesalahan';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -94,7 +129,6 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
                   });
                 },
                 validator: (dynamic value) {
-                  String strValue = value as String;
                   if (value.isEmpty) {
                     return 'Kategori tidak boleh kosong';
                   }
@@ -122,8 +156,7 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
               ),
               TextFormField(
                 decoration: const InputDecoration(
-                    label: Text('Nominal*'),
-                    prefixText: 'Rp '),
+                    label: Text('Nominal*'), prefixText: 'Rp '),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Nominal transaksi tidak boleh kosong';
@@ -154,24 +187,10 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      String category = _selectedCategory;
-                      String title = _titleController.value.text;
-                      int amount = int.parse(_amountController.value.text);
-                      String note = _noteController.value.text;
-
-                      await addOutTransaction(
-                        category: category,
-                        title: title,
-                        amount: amount,
-                        note: note,
-                      );
-
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text('Tambah pengeluaran'),
+                  onPressed: _isAddOutcomeDisabled ? null : _doAddOutcome,
+                  child: _isAddOutcomeDisabled
+                      ? const CircularProgressIndicator()
+                      : const Text('Tambah pengeluaran'),
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(double.infinity, 48),
                   ),
