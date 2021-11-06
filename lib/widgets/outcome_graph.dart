@@ -1,19 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/monthly_cashflow.dart';
+import 'package:jagadompet_flutter/models/transaction_item.dart';
+import 'package:jagadompet_flutter/utils/firebase_utils.dart';
 import 'package:jagadompet_flutter/widgets/indicator.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 class OutcomeGraph extends StatefulWidget {
   final MonthlyCashflow cashflow;
   final DateTime date;
 
-  const OutcomeGraph({
-    Key? key,
-    required this.cashflow,
-    required this.date
-  }) : super(key: key);
+  const OutcomeGraph({Key? key, required this.cashflow, required this.date})
+      : super(key: key);
 
   @override
   State<OutcomeGraph> createState() => _OutcomeGraphState();
@@ -253,6 +254,72 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
                 Text('Rp${numberFormat.format(widget.cashflow.outOther)}'),
               ],
             ),
+            const SizedBox(
+              height: 4,
+            ),
+            widget.cashflow.outOther != null && widget.cashflow.outOther! > 0
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: FutureBuilder(
+                      future: getOtherTransactionsOnMonth(widget.date),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Text('Terjadi kesalahan'),
+                          );
+                        }
+
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          List<QueryDocumentSnapshot> transactions =
+                              snapshot.data!.docs;
+                          List<Widget> itemList = List.generate(
+                            transactions.length,
+                            (i) {
+                              TransactionItem item = TransactionItem.fromJson(
+                                  transactions[i].data()
+                                      as Map<String, Object?>,
+                                  transactions[i].id);
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Rp${numberFormat.format(item.amount)}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: itemList,
+                          );
+                        }
+                        return SkeletonAnimation(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Container(
+                            height: 24,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.black26,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : const SizedBox(),
             const SizedBox(
               height: 32,
             ),

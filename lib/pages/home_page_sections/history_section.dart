@@ -66,7 +66,6 @@ class _HistorySectionState extends State<HistorySection> {
                 return ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, i) {
-                    print(transactions[i].id);
                     return TransactionHistoryCard(
                         transaction: TransactionItem.fromJson(
                             transactions[i].data() as Map<String, Object?>,

@@ -202,13 +202,13 @@ Future<void> deleteInTransaction(TransactionItem item) async {
   String yearMonthKey = '${now.year.toString()}_${now.month.toString()}';
 
   DocumentReference userWalletRef =
-  FirebaseFirestore.instance.collection('wallet').doc(uid);
+      FirebaseFirestore.instance.collection('wallet').doc(uid);
 
   DocumentReference thisMonthCashflowRef =
-  userWalletRef.collection('cashflow').doc(yearMonthKey);
+      userWalletRef.collection('cashflow').doc(yearMonthKey);
 
   CollectionReference transactionsCollectionRef =
-  userWalletRef.collection('transactions');
+      userWalletRef.collection('transactions');
 
   Map<String, dynamic> userWallet = await userWalletRef
       .get()
@@ -236,4 +236,28 @@ Future<void> deleteInTransaction(TransactionItem item) async {
     'income': newCashflowIncome,
     item.sourceId.toString(): newCashflowOnCategory,
   }, SetOptions(merge: true));
+}
+
+Future<QuerySnapshot> getOtherTransactionsOnMonth(DateTime date) async {
+  DateTime dateStart = DateTime(date.year, date.month);
+  DateTime dateEnd = (date.month < 12)
+      ? DateTime(date.year, date.month + 1, 0)
+      : DateTime(date.year + 1, 1, 0);
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String uid = auth.currentUser!.uid.toString();
+
+  CollectionReference transactionsRef = FirebaseFirestore.instance
+      .collection('wallet')
+      .doc(uid)
+      .collection('transactions');
+
+  QuerySnapshot result = await transactionsRef
+      .where('type', isEqualTo: 'out')
+      .where('date',
+          isGreaterThanOrEqualTo: dateStart, isLessThanOrEqualTo: dateEnd)
+      .where('category_id', isEqualTo: 'out_other')
+      .get();
+
+  return result;
 }
