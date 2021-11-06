@@ -5,25 +5,39 @@ import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/monthly_cashflow.dart';
 import 'package:jagadompet_flutter/widgets/indicator.dart';
 
-class OutcomeGraph extends StatelessWidget {
+class OutcomeGraph extends StatefulWidget {
   final MonthlyCashflow cashflow;
-  final Color foodColor = const Color(0xffef476f);
-  final Color dailyColor = const Color(0xffffd166);
-  final Color educationColor = const Color(0xff06d6a0);
-  final Color healthColor = const Color(0xff118ab2);
-  final Color otherColor = const Color(0xff073b4c);
-  final double sectionRadius = 100;
+
   const OutcomeGraph({
     Key? key,
     required this.cashflow,
   }) : super(key: key);
 
+  @override
+  State<OutcomeGraph> createState() => _OutcomeGraphState();
+}
+
+class _OutcomeGraphState extends State<OutcomeGraph> {
+  final Color foodColor = const Color(0xffef476f);
+
+  final Color dailyColor = const Color(0xffffd166);
+
+  final Color educationColor = const Color(0xff06d6a0);
+
+  final Color healthColor = const Color(0xff118ab2);
+
+  final Color otherColor = const Color(0xff073b4c);
+
+  NumberFormat numberFormat = NumberFormat.decimalPattern('id');
+
+  int _touchedIndex = -1;
+
   List<PieChartSectionData> categoryList() {
-    double newOutFood = cashflow.outFood!.toDouble();
-    double newOutDaily = cashflow.outDaily!.toDouble();
-    double newOutEducation = cashflow.outEducation!.toDouble();
-    double newOutHealth = cashflow.outHealth!.toDouble();
-    double newOutOther = cashflow.outOther!.toDouble();
+    double newOutFood = widget.cashflow.outFood!.toDouble();
+    double newOutDaily = widget.cashflow.outDaily!.toDouble();
+    double newOutEducation = widget.cashflow.outEducation!.toDouble();
+    double newOutHealth = widget.cashflow.outHealth!.toDouble();
+    double newOutOther = widget.cashflow.outOther!.toDouble();
 
     if (newOutFood == 0 &&
         newOutDaily == 0 &&
@@ -34,38 +48,71 @@ class OutcomeGraph extends StatelessWidget {
           newOutDaily = newOutEducation = newOutHealth = newOutOther = 1.0;
     }
 
-    return [
-      PieChartSectionData(
-        value: newOutFood,
-        title: '',
-        color: foodColor,
-        radius: sectionRadius,
-      ),
-      PieChartSectionData(
-        value: newOutDaily,
-        title: '',
-        color: dailyColor,
-        radius: sectionRadius,
-      ),
-      PieChartSectionData(
-        value: newOutEducation,
-        title: '',
-        color: educationColor,
-        radius: sectionRadius,
-      ),
-      PieChartSectionData(
-        value: newOutHealth,
-        title: '',
-        color: healthColor,
-        radius: sectionRadius,
-      ),
-      PieChartSectionData(
-        value: newOutOther,
-        title: '',
-        color: otherColor,
-        radius: sectionRadius,
-      ),
-    ];
+    return List.generate(5, (index) {
+      final isTouched = index == _touchedIndex;
+      final fontSize = isTouched ? 14.0 : 0.0 ;
+      final radius = isTouched ? 120.0 : 100.0;
+
+      switch (index) {
+        case 0:
+          return PieChartSectionData(
+            value: newOutFood,
+            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outFood)}' : '',
+            color: foodColor,
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          );
+        case 1:
+          return PieChartSectionData(
+            value: newOutDaily,
+            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outDaily)}' : '',
+            color: dailyColor,
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          );
+        case 2:
+          return PieChartSectionData(
+            value: newOutEducation,
+            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outEducation)}' : '',
+            color: educationColor,
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          );
+        case 3:
+          return PieChartSectionData(
+            value: newOutHealth,
+            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outHealth)}' : '',
+            color: healthColor,
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          );
+        case 4:
+          return PieChartSectionData(
+            value: newOutOther,
+            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outOther)}' : '',
+            color: otherColor,
+            radius: radius,
+            titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          );
+        default:
+          throw 'Yabe';
+      }
+    });
   }
 
   @override
@@ -73,11 +120,11 @@ class OutcomeGraph extends StatelessWidget {
     initializeDateFormatting('id_ID', null);
     DateTime now = DateTime.now();
     final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
-    final int total = cashflow.outFood! +
-        cashflow.outDaily! +
-        cashflow.outEducation! +
-        cashflow.outHealth! +
-        cashflow.outOther!;
+    final int total = widget.cashflow.outFood! +
+        widget.cashflow.outDaily! +
+        widget.cashflow.outEducation! +
+        widget.cashflow.outHealth! +
+        widget.cashflow.outOther!;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -98,6 +145,19 @@ class OutcomeGraph extends StatelessWidget {
               height: 200,
               child: PieChart(
                 PieChartData(
+                  pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                    setState(() {
+                      if (!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                        _touchedIndex = -1;
+                        return;
+                      }
+                      _touchedIndex =
+                          pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    });
+                  }),
                   sectionsSpace: 0,
                   centerSpaceRadius: 0,
                   sections: categoryList(),
@@ -128,7 +188,7 @@ class OutcomeGraph extends StatelessWidget {
                     color: foodColor,
                     text: 'Makanan & minuman',
                   ),
-                  Text('Rp${numberFormat.format(cashflow.outFood)}'),
+                  Text('Rp${numberFormat.format(widget.cashflow.outFood)}'),
                 ],
               ),
               const SizedBox(
@@ -141,7 +201,7 @@ class OutcomeGraph extends StatelessWidget {
                     color: dailyColor,
                     text: 'Kebutuhan sehari-hari',
                   ),
-                  Text('Rp${numberFormat.format(cashflow.outDaily)}'),
+                  Text('Rp${numberFormat.format(widget.cashflow.outDaily)}'),
                 ],
               ),
               const SizedBox(
@@ -154,7 +214,8 @@ class OutcomeGraph extends StatelessWidget {
                     color: educationColor,
                     text: 'Pendidikan',
                   ),
-                  Text('Rp${numberFormat.format(cashflow.outEducation)}'),
+                  Text(
+                      'Rp${numberFormat.format(widget.cashflow.outEducation)}'),
                 ],
               ),
               const SizedBox(
@@ -167,7 +228,7 @@ class OutcomeGraph extends StatelessWidget {
                     color: healthColor,
                     text: 'Kesehatan',
                   ),
-                  Text('Rp${numberFormat.format(cashflow.outHealth)}'),
+                  Text('Rp${numberFormat.format(widget.cashflow.outHealth)}'),
                 ],
               ),
               const SizedBox(
@@ -180,7 +241,7 @@ class OutcomeGraph extends StatelessWidget {
                     color: otherColor,
                     text: 'Lain-lain',
                   ),
-                  Text('Rp${numberFormat.format(cashflow.outOther)}'),
+                  Text('Rp${numberFormat.format(widget.cashflow.outOther)}'),
                 ],
               ),
               const SizedBox(

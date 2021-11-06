@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jagadompet_flutter/models/transaction_item.dart';
 import 'package:jagadompet_flutter/utils/general_utils.dart';
 
 Future<void> userFirstTimeSetup(String fullName, String email) async {
@@ -23,7 +24,7 @@ Future<void> userFirstTimeSetup(String fullName, String email) async {
   await currentUser!.updateDisplayName(fullName);
   await profileRef.set({'name': fullName});
   await userWallet.set({
-    'amount': 0,
+    'total': 0,
   }, SetOptions(merge: true));
   await userCashflows.doc(cashflowKey).set({
     'in': 0,
@@ -148,5 +149,91 @@ Future<void> addInTransaction({
   await thisMonthCashflowRef.set({
     'income': newCashflowIncome,
     source: newCashflowOnSource,
+  }, SetOptions(merge: true));
+}
+
+Future<void> deleteOutTransaction(TransactionItem item) async {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String uid = auth.currentUser!.uid.toString();
+  DateTime now = item.date;
+  String yearMonthKey = '${now.year.toString()}_${now.month.toString()}';
+
+  DocumentReference userWalletRef =
+      FirebaseFirestore.instance.collection('wallet').doc(uid);
+
+  DocumentReference thisMonthCashflowRef =
+      userWalletRef.collection('cashflow').doc(yearMonthKey);
+
+  CollectionReference transactionsCollectionRef =
+      userWalletRef.collection('transactions');
+
+  Map<String, dynamic> userWallet = await userWalletRef
+      .get()
+      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+
+  Map<String, dynamic> thisMonthCashflow = await thisMonthCashflowRef
+      .get()
+      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+
+  int currentTotal = userWallet['total'] ?? 0;
+  int newTotal = currentTotal + item.amount;
+
+  int currentCashflowOutcome = thisMonthCashflow['outcome'] ?? 0;
+  int newCashflowOutcome = currentCashflowOutcome - item.amount;
+
+  int currentCashflowOnCategory = thisMonthCashflow[item.categoryId] ?? 0;
+  int newCashflowOnCategory = currentCashflowOnCategory - item.amount;
+
+  await transactionsCollectionRef.doc(item.id).delete();
+  await userWalletRef.set(
+    {'total': newTotal},
+    SetOptions(merge: true),
+  );
+  await thisMonthCashflowRef.set({
+    'outcome': newCashflowOutcome,
+    item.categoryId.toString(): newCashflowOnCategory,
+  }, SetOptions(merge: true));
+}
+
+Future<void> deleteInTransaction(TransactionItem item) async {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String uid = auth.currentUser!.uid.toString();
+  DateTime now = item.date;
+  String yearMonthKey = '${now.year.toString()}_${now.month.toString()}';
+
+  DocumentReference userWalletRef =
+  FirebaseFirestore.instance.collection('wallet').doc(uid);
+
+  DocumentReference thisMonthCashflowRef =
+  userWalletRef.collection('cashflow').doc(yearMonthKey);
+
+  CollectionReference transactionsCollectionRef =
+  userWalletRef.collection('transactions');
+
+  Map<String, dynamic> userWallet = await userWalletRef
+      .get()
+      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+
+  Map<String, dynamic> thisMonthCashflow = await thisMonthCashflowRef
+      .get()
+      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+
+  int currentTotal = userWallet['total'] ?? 0;
+  int newTotal = currentTotal - item.amount;
+
+  int currentCashflowIncome = thisMonthCashflow['income'] ?? 0;
+  int newCashflowIncome = currentCashflowIncome - item.amount;
+
+  int currentCashflowOnCategory = thisMonthCashflow[item.sourceId] ?? 0;
+  int newCashflowOnCategory = currentCashflowOnCategory - item.amount;
+
+  await transactionsCollectionRef.doc(item.id).delete();
+  await userWalletRef.set(
+    {'total': newTotal},
+    SetOptions(merge: true),
+  );
+  await thisMonthCashflowRef.set({
+    'income': newCashflowIncome,
+    item.sourceId.toString(): newCashflowOnCategory,
   }, SetOptions(merge: true));
 }

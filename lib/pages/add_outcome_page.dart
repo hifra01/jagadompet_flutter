@@ -51,7 +51,9 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
 
   void _doAddOutcome() async {
     if (_formKey.currentState!.validate()) {
-      _isAddOutcomeDisabled = true;
+      setState(() {
+        _isAddOutcomeDisabled = true;
+      });
       String category = _selectedCategory;
       String title = _titleController.value.text;
       int amount = int.parse(_amountController.value.text);
@@ -71,7 +73,9 @@ class _AddOutcomePageState extends State<AddOutcomePage> {
 
         Navigator.pop(context);
       } on FirebaseException catch (e) {
-        _isAddOutcomeDisabled = false;
+        setState(() {
+          _isAddOutcomeDisabled = false;
+        });
         String errorMessage = e.message ?? 'Terjadi kesalahan';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

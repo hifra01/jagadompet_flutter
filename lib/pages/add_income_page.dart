@@ -191,7 +191,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                   onPressed: _isAddIncomeDisabled ? null : _doAddIncome,
                   child: _isAddIncomeDisabled
                       ? const CircularProgressIndicator()
-                      : const Text('Tambah pengeluaran'),
+                      : const Text('Tambah isi dompet'),
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(double.infinity, 48),
                   ),

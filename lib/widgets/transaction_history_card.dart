@@ -3,18 +3,24 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/transaction_item.dart';
 
-class TransactionHistoryCard extends StatelessWidget {
+class TransactionHistoryCard extends StatefulWidget {
+  final Function callback;
   final TransactionItem transaction;
-  const TransactionHistoryCard({Key? key, required this.transaction})
+  const TransactionHistoryCard({Key? key, required this.transaction, required this.callback})
       : super(key: key);
 
+  @override
+  State<TransactionHistoryCard> createState() => _TransactionHistoryCardState();
+}
+
+class _TransactionHistoryCardState extends State<TransactionHistoryCard> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('id_ID', null);
     NumberFormat numberFormat = NumberFormat.decimalPattern('id');
-    Color priceColor = transaction.type == "in" ? Colors.green : Colors.red;
+    Color priceColor = widget.transaction.type == "in" ? Colors.green : Colors.red;
     String detailPath =
-        transaction.type == "in" ? '/detailincome' : '/detailoutcome';
+        widget.transaction.type == "in" ? '/detailincome' : '/detailoutcome';
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -25,7 +31,8 @@ class TransactionHistoryCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () async {
-          Navigator.pushNamed(context, detailPath, arguments: transaction);
+          await Navigator.pushNamed(context, detailPath, arguments: widget.transaction);
+          widget.callback();
         },
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: Padding(
@@ -37,14 +44,14 @@ class TransactionHistoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    transaction.title,
+                    widget.transaction.title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    (transaction.type == 'in' ? '+' : '-') +
-                        'Rp${numberFormat.format(transaction.amount)}',
+                    (widget.transaction.type == 'in' ? '+' : '-') +
+                        'Rp${numberFormat.format(widget.transaction.amount)}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: priceColor,
@@ -56,7 +63,7 @@ class TransactionHistoryCard extends StatelessWidget {
                 height: 4,
               ),
               Text(
-                DateFormat.yMMMMd('id_ID').format(transaction.date),
+                DateFormat.yMMMMd('id_ID').format(widget.transaction.date),
                 style: const TextStyle(fontSize: 12),
               ),
             ],

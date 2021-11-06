@@ -15,6 +15,10 @@ class _HistorySectionState extends State<HistorySection> {
   late String _uid;
   late CollectionReference _transactionsRef;
 
+  void callback() {
+    setState((){});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,13 +62,15 @@ class _HistorySectionState extends State<HistorySection> {
                     child: Text('Anda belum menambahkan transaksi apapun'),
                   );
                 }
-                List transactions = snapshot.data!.docs;
+                List<QueryDocumentSnapshot> transactions = snapshot.data!.docs;
                 return ListView.builder(
                   itemCount: transactions.length,
                   itemBuilder: (context, i) {
+                    print(transactions[i].id);
                     return TransactionHistoryCard(
                         transaction: TransactionItem.fromJson(
-                            transactions[i].data() as Map<String, Object?>));
+                            transactions[i].data() as Map<String, Object?>,
+                            transactions[i].id), callback: callback,);
                   },
                 );
               }

@@ -33,9 +33,28 @@ class _HomeSectionState extends State<HomeSection> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return const SizedBox.expand(
-            child: Center(
-              child: Text('Terjadi kesalahan'),
+          return SizedBox.expand(
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.blue,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  child: const Text(
+                    'Beranda',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const Expanded(
+                  child: Center(
+                    child: Text('Terjadi kesalahan'),
+                  ),
+                ),
+              ],
             ),
           );
         }
@@ -48,51 +67,63 @@ class _HomeSectionState extends State<HomeSection> {
             children: [
               Container(
                 color: Colors.blue,
-                padding: const EdgeInsets.all(16),
                 width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: Text(
-                        'Isi dompetmu saat ini',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          'Rp',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          numberFormat.format(data.total),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                padding: const EdgeInsets.all(16),
+                child: const Text(
+                  'Beranda',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: Text(
+                              'Isi dompetmu saat ini',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              const Text(
+                                'Rp',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                numberFormat.format(data.total),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16,),
                     InOutDiffCard(
                       userWallet: userWallet,
                     ),
@@ -151,6 +182,18 @@ class _HomeSectionState extends State<HomeSection> {
           children: [
             Container(
               color: Colors.blue,
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              child: const Text(
+                'Beranda',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            Container(
               padding: const EdgeInsets.all(16),
               width: double.infinity,
               child: Column(
@@ -161,7 +204,7 @@ class _HomeSectionState extends State<HomeSection> {
                     child: Text(
                       'Isi dompetmu saat ini',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -173,7 +216,7 @@ class _HomeSectionState extends State<HomeSection> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(
@@ -186,7 +229,7 @@ class _HomeSectionState extends State<HomeSection> {
                           width: 200,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: Colors.blue[200],
+                            color: Colors.black26,
                           ),
                         ),
                       ),

@@ -1,15 +1,49 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:jagadompet_flutter/models/transaction_item.dart';
+import 'package:jagadompet_flutter/utils/firebase_utils.dart';
 
-class DetailOutcomePage extends StatelessWidget {
+class DetailOutcomePage extends StatefulWidget {
   const DetailOutcomePage({Key? key}) : super(key: key);
 
   @override
+  State<DetailOutcomePage> createState() => _DetailOutcomePageState();
+}
+
+class _DetailOutcomePageState extends State<DetailOutcomePage> {
+  bool _isDeleteDisabled = false;
+  late TransactionItem item;
+
+  void _doDeleteItem() async {
+    try {
+      setState(() {
+        _isDeleteDisabled = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Menghapus pengeluaran...'),
+        ),
+      );
+      await deleteOutTransaction(item);
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      setState(() {
+        _isDeleteDisabled = false;
+      });
+      String errorMessage = e.message ?? 'Terjadi kesalahan';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TransactionItem item =
-        ModalRoute.of(context)!.settings.arguments as TransactionItem;
+    item = ModalRoute.of(context)!.settings.arguments as TransactionItem;
     initializeDateFormatting('id_ID', null);
     NumberFormat numberFormat = NumberFormat.decimalPattern('id');
     return Scaffold(
@@ -43,6 +77,7 @@ class DetailOutcomePage extends StatelessWidget {
                 height: 8,
               ),
               Text(item.title),
+              Text(item.id),
               const SizedBox(
                 height: 32,
               ),
@@ -87,6 +122,21 @@ class DetailOutcomePage extends StatelessWidget {
                   ),
                   Text(item.note),
                 ],
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+              TextButton(
+                onPressed: _isDeleteDisabled ? null : _doDeleteItem,
+                style: TextButton.styleFrom(primary: Colors.red),
+                child: _isDeleteDisabled
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        'HAPUS ITEM',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ],
           ),
