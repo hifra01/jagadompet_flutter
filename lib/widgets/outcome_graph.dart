@@ -7,10 +7,12 @@ import 'package:jagadompet_flutter/widgets/indicator.dart';
 
 class OutcomeGraph extends StatefulWidget {
   final MonthlyCashflow cashflow;
+  final DateTime date;
 
   const OutcomeGraph({
     Key? key,
     required this.cashflow,
+    required this.date
   }) : super(key: key);
 
   @override
@@ -50,14 +52,16 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
 
     return List.generate(5, (index) {
       final isTouched = index == _touchedIndex;
-      final fontSize = isTouched ? 14.0 : 0.0 ;
+      final fontSize = isTouched ? 14.0 : 0.0;
       final radius = isTouched ? 120.0 : 100.0;
 
       switch (index) {
         case 0:
           return PieChartSectionData(
             value: newOutFood,
-            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outFood)}' : '',
+            title: isTouched
+                ? 'Rp${numberFormat.format(widget.cashflow.outFood)}'
+                : '',
             color: foodColor,
             radius: radius,
             titleStyle: TextStyle(
@@ -68,7 +72,9 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
         case 1:
           return PieChartSectionData(
             value: newOutDaily,
-            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outDaily)}' : '',
+            title: isTouched
+                ? 'Rp${numberFormat.format(widget.cashflow.outDaily)}'
+                : '',
             color: dailyColor,
             radius: radius,
             titleStyle: TextStyle(
@@ -79,7 +85,9 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
         case 2:
           return PieChartSectionData(
             value: newOutEducation,
-            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outEducation)}' : '',
+            title: isTouched
+                ? 'Rp${numberFormat.format(widget.cashflow.outEducation)}'
+                : '',
             color: educationColor,
             radius: radius,
             titleStyle: TextStyle(
@@ -90,7 +98,9 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
         case 3:
           return PieChartSectionData(
             value: newOutHealth,
-            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outHealth)}' : '',
+            title: isTouched
+                ? 'Rp${numberFormat.format(widget.cashflow.outHealth)}'
+                : '',
             color: healthColor,
             radius: radius,
             titleStyle: TextStyle(
@@ -101,7 +111,9 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
         case 4:
           return PieChartSectionData(
             value: newOutOther,
-            title: isTouched ? 'Rp${numberFormat.format(widget.cashflow.outOther)}' : '',
+            title: isTouched
+                ? 'Rp${numberFormat.format(widget.cashflow.outOther)}'
+                : '',
             color: otherColor,
             radius: radius,
             titleStyle: TextStyle(
@@ -118,157 +130,153 @@ class _OutcomeGraphState extends State<OutcomeGraph> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('id_ID', null);
-    DateTime now = DateTime.now();
     final NumberFormat numberFormat = NumberFormat.decimalPattern('id');
     final int total = widget.cashflow.outFood! +
         widget.cashflow.outDaily! +
         widget.cashflow.outEducation! +
         widget.cashflow.outHealth! +
         widget.cashflow.outOther!;
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Text(
-            DateFormat.yMMMM('id_ID').format(now),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+    return Column(
+      children: [
+        Text(
+          DateFormat.yMMMM('id_ID').format(widget.date),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            width: 200,
+            height: 200,
+            child: PieChart(
+              PieChartData(
+                pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                  setState(() {
+                    if (!event.isInterestedForInteractions ||
+                        pieTouchResponse == null ||
+                        pieTouchResponse.touchedSection == null) {
+                      _touchedIndex = -1;
+                      return;
+                    }
+                    _touchedIndex =
+                        pieTouchResponse.touchedSection!.touchedSectionIndex;
+                  });
+                }),
+                sectionsSpace: 0,
+                centerSpaceRadius: 0,
+                sections: categoryList(),
+              ),
             ),
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                    setState(() {
-                      if (!event.isInterestedForInteractions ||
-                          pieTouchResponse == null ||
-                          pieTouchResponse.touchedSection == null) {
-                        _touchedIndex = -1;
-                        return;
-                      }
-                      _touchedIndex =
-                          pieTouchResponse.touchedSection!.touchedSectionIndex;
-                    });
-                  }),
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 0,
-                  sections: categoryList(),
-                ),
+        ),
+        const SizedBox(
+          height: 48,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Kategori',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
               ),
             ),
-          ),
-          const SizedBox(
-            height: 48,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Kategori',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+            const SizedBox(
+              height: 16,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Indicator(
+                  color: foodColor,
+                  text: 'Makanan & minuman',
                 ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Indicator(
-                    color: foodColor,
-                    text: 'Makanan & minuman',
+                Text('Rp${numberFormat.format(widget.cashflow.outFood)}'),
+              ],
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Indicator(
+                  color: dailyColor,
+                  text: 'Kebutuhan sehari-hari',
+                ),
+                Text('Rp${numberFormat.format(widget.cashflow.outDaily)}'),
+              ],
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Indicator(
+                  color: educationColor,
+                  text: 'Pendidikan',
+                ),
+                Text('Rp${numberFormat.format(widget.cashflow.outEducation)}'),
+              ],
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Indicator(
+                  color: healthColor,
+                  text: 'Kesehatan',
+                ),
+                Text('Rp${numberFormat.format(widget.cashflow.outHealth)}'),
+              ],
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Indicator(
+                  color: otherColor,
+                  text: 'Lain-lain',
+                ),
+                Text('Rp${numberFormat.format(widget.cashflow.outOther)}'),
+              ],
+            ),
+            const SizedBox(
+              height: 32,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Total',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
-                  Text('Rp${numberFormat.format(widget.cashflow.outFood)}'),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Indicator(
-                    color: dailyColor,
-                    text: 'Kebutuhan sehari-hari',
+                ),
+                Text(
+                  'Rp${numberFormat.format(total)}',
+                  style: const TextStyle(
+                    fontSize: 18,
                   ),
-                  Text('Rp${numberFormat.format(widget.cashflow.outDaily)}'),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Indicator(
-                    color: educationColor,
-                    text: 'Pendidikan',
-                  ),
-                  Text(
-                      'Rp${numberFormat.format(widget.cashflow.outEducation)}'),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Indicator(
-                    color: healthColor,
-                    text: 'Kesehatan',
-                  ),
-                  Text('Rp${numberFormat.format(widget.cashflow.outHealth)}'),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Indicator(
-                    color: otherColor,
-                    text: 'Lain-lain',
-                  ),
-                  Text('Rp${numberFormat.format(widget.cashflow.outOther)}'),
-                ],
-              ),
-              const SizedBox(
-                height: 32,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  Text(
-                    'Rp${numberFormat.format(total)}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

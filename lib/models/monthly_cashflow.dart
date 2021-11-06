@@ -28,4 +28,15 @@ class MonthlyCashflow {
           outHealth: json['out_health'] != null ? json['out_health'] as int : 0,
           outOther: json['out_other'] != null ? json['out_other'] as int : 0,
         );
+
+  MonthlyCashflow.allZero()
+      : this(
+          income: 0,
+          outcome: 0,
+          outFood: 0,
+          outDaily: 0,
+          outEducation: 0,
+          outHealth: 0,
+          outOther: 0,
+        );
 }
