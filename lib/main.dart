@@ -28,18 +28,19 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     String initialPath = _auth.currentUser != null ? '/home' : '/login';
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'JagaDompet',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/home': (context) => HomePage(),
-        '/addoutcome': (context) => AddOutcomePage(),
-        '/addincome': (context) => AddIncomePage(),
-        '/detailoutcome': (context) => DetailOutcomePage(),
-        '/detailincome': (context) => DetailIncomePage(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/home': (context) => const HomePage(),
+        '/addoutcome': (context) => const AddOutcomePage(),
+        '/addincome': (context) => const AddIncomePage(),
+        '/detailoutcome': (context) => const DetailOutcomePage(),
+        '/detailincome': (context) => const DetailIncomePage(),
       },
       initialRoute: initialPath,
     );
