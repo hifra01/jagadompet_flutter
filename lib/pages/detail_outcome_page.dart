@@ -77,7 +77,6 @@ class _DetailOutcomePageState extends State<DetailOutcomePage> {
                 height: 8,
               ),
               Text(item.title),
-              Text(item.id),
               const SizedBox(
                 height: 32,
               ),
