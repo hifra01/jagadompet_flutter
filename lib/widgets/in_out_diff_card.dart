@@ -50,8 +50,10 @@ class _InOutDiffCardState extends State<InOutDiffCard> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          MonthlyCashflow cashflow = MonthlyCashflow.fromJson(
-              snapshot.data!.data() as Map<String, Object?>);
+          MonthlyCashflow cashflow = snapshot.data!.data() == null
+              ? MonthlyCashflow.allZero()
+              : MonthlyCashflow.fromJson(
+                  snapshot.data!.data() as Map<String, Object?>);
           return Card(
             shape: RoundedRectangleBorder(
               side: BorderSide(

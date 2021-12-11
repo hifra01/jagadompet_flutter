@@ -51,7 +51,7 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.pushReplacementNamed(context, '/home');
       } on FirebaseException catch (e) {
         setState(() {
-          _isLoginDisabled = true;
+          _isLoginDisabled = false;
         });
         String errorMessage = e.message ?? 'Terjadi kesalahan';
         final snackBar = SnackBar(

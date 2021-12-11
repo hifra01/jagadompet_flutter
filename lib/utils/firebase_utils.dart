@@ -122,7 +122,9 @@ Future<void> addInTransaction({
 
   Map<String, dynamic> thisMonthCashflow = await thisMonthCashflowRef
       .get()
-      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+      .then((DocumentSnapshot value) => value.data() == null
+          ? <String, dynamic>{}
+          : value.data() as Map<String, dynamic>);
 
   int currentTotal = userWallet['total'] ?? 0;
   int newTotal = currentTotal + amount;
@@ -173,7 +175,9 @@ Future<void> deleteOutTransaction(TransactionItem item) async {
 
   Map<String, dynamic> thisMonthCashflow = await thisMonthCashflowRef
       .get()
-      .then((DocumentSnapshot value) => value.data() as Map<String, dynamic>);
+      .then((DocumentSnapshot value) => value.data() == null
+          ? <String, dynamic>{}
+          : value.data() as Map<String, dynamic>);
 
   int currentTotal = userWallet['total'] ?? 0;
   int newTotal = currentTotal + item.amount;
